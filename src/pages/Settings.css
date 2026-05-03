@@ -205,3 +205,170 @@
   color: var(--text-muted);
   font-weight: 300;
 }
+
+/* ── DatePicker / DayPicker 공통 카드 ── */
+.picker-card {
+  border-top: 1px solid #F5F5F5;
+  overflow: hidden;
+}
+
+.picker-card__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  text-align: left;
+}
+
+.picker-card__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.picker-card__right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.picker-card__val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.picker-card__chevron {
+  font-size: 18px;
+  color: var(--text-muted);
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.picker-card__chevron.open {
+  transform: rotate(90deg);
+}
+
+/* ── 캘린더 ── */
+.calendar {
+  padding: 0 14px 14px;
+  background: #FAFAFA;
+}
+
+.calendar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px;
+}
+
+.calendar__nav-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  color: var(--text-secondary);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+
+.calendar__nav-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.calendar__month {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.calendar__weekdays span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.calendar__weekdays span:first-child { color: #E53935; }
+.calendar__weekdays span:last-child  { color: #1565C0; }
+
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar__day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  border-radius: 50%;
+  transition: background 0.1s, color 0.1s;
+}
+
+.calendar__day:hover:not(.empty):not(.selected) {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.calendar__day.selected {
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 700;
+}
+
+.calendar__day.empty {
+  cursor: default;
+}
+
+/* ── 요일 알약 버튼 ── */
+.day-pills {
+  display: flex;
+  gap: 6px;
+  padding: 6px 18px 16px;
+  flex-wrap: wrap;
+}
+
+.day-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: #F0F0F0;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.day-pill:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.day-pill.active {
+  background: var(--primary);
+  color: var(--white);
+}
