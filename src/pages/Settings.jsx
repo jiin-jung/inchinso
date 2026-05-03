@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { supabase } from '../lib/supabase'
 import './Settings.css'
 
 const NOTICE_LABELS = {
@@ -14,12 +15,13 @@ const GENERAL_SETTINGS = [
   { label: '언어', desc: '한국어' },
   { label: '앱 버전', desc: 'v0.1.0' },
   { label: '개인정보 처리방침', desc: '' },
-  { label: '로그아웃', desc: '', danger: true },
 ]
 
 export default function Settings() {
   const { isAdmin, setIsAdmin, maxCapacity, updateMaxCapacity, notice, setNotice } = useApp()
   const [draft, setDraft] = useState({ ...notice })
+
+  const handleSignOut = () => supabase.auth.signOut()
 
   const handleSave = () => setNotice({ ...draft })
 
@@ -83,12 +85,16 @@ export default function Settings() {
 
       <div className="settings__section">
         <ul className="settings__list">
-          {GENERAL_SETTINGS.map(({ label, desc, danger }) => (
-            <li key={label} className={`settings__item${danger ? ' danger' : ''}`}>
+          {GENERAL_SETTINGS.map(({ label, desc }) => (
+            <li key={label} className="settings__item">
               <span className="settings__label">{label}</span>
               {desc ? <span className="settings__desc">{desc}</span> : <span className="settings__arrow">›</span>}
             </li>
           ))}
+          <li className="settings__item danger" onClick={handleSignOut}>
+            <span className="settings__label">로그아웃</span>
+            <span className="settings__arrow">›</span>
+          </li>
         </ul>
       </div>
     </div>

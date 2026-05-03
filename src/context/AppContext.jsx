@@ -12,8 +12,6 @@ const MOCK_PARTICIPANTS = [
   { id: '9', name: '강다은' },
 ]
 
-const CURRENT_USER = { id: 'me', name: '박지민' }
-
 const INITIAL_NOTICE = {
   time: '18:00',
   location: '인천대 체육관 2층',
@@ -23,7 +21,16 @@ const INITIAL_NOTICE = {
 
 const AppContext = createContext(null)
 
-export function AppProvider({ children }) {
+export function AppProvider({ children, user }) {
+  // Derive display name from Supabase user metadata
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split('@')[0] ||
+    '사용자'
+
+  const currentUser = { id: user?.id ?? 'me', name: displayName }
+
   const [isAdmin, setIsAdmin] = useState(false)
   const [maxCapacity, setMaxCapacity] = useState(16)
   const [participants, setParticipants] = useState(
@@ -32,25 +39,24 @@ export function AppProvider({ children }) {
   const [notice, setNotice] = useState(INITIAL_NOTICE)
   const [courts, setCourts] = useState(null)
 
-  const myStatus = participants.find((p) => p.id === CURRENT_USER.id)?.status ?? null
+  const myStatus = participants.find((p) => p.id === currentUser.id)?.status ?? null
 
   const joinSession = useCallback(() => {
     setParticipants((prev) => {
-      if (prev.find((p) => p.id === CURRENT_USER.id)) return prev
+      if (prev.find((p) => p.id === currentUser.id)) return prev
       const confirmedCount = prev.filter((p) => p.status === 'confirmed').length
       const status = confirmedCount < maxCapacity ? 'confirmed' : 'waiting'
-      return [...prev, { ...CURRENT_USER, status }]
+      return [...prev, { ...currentUser, status }]
     })
-  }, [maxCapacity])
+  }, [currentUser, maxCapacity])
 
   const leaveSession = useCallback(() => {
     setParticipants((prev) => {
-      const next = prev.filter((p) => p.id !== CURRENT_USER.id)
+      const next = prev.filter((p) => p.id !== currentUser.id)
       return next.map((p, i) => ({ ...p, status: i < maxCapacity ? 'confirmed' : 'waiting' }))
     })
-  }, [maxCapacity])
+  }, [currentUser.id, maxCapacity])
 
-  // Re-evaluates all statuses by join-order when capacity changes
   const updateMaxCapacity = useCallback((newMax) => {
     setMaxCapacity(newMax)
     setParticipants((prev) =>
@@ -75,7 +81,7 @@ export function AppProvider({ children }) {
     <AppContext.Provider
       value={{
         isAdmin, setIsAdmin,
-        currentUser: CURRENT_USER,
+        currentUser,
         maxCapacity, updateMaxCapacity,
         participants, myStatus,
         joinSession, leaveSession,
