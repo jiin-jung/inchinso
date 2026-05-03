@@ -13,9 +13,10 @@ const MOCK_PARTICIPANTS = [
 ]
 
 const INITIAL_NOTICE = {
+  date: '5월 10일',
+  day: '토요일',
   time: '18:00',
   location: '인천대 체육관 2층',
-  fee: '5,000원',
   rule: '10분 전 도착',
 }
 

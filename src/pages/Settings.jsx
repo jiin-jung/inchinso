@@ -3,9 +3,10 @@ import { useApp } from '../context/AppContext'
 import './Settings.css'
 
 const NOTICE_LABELS = {
+  date: '날짜',
+  day: '요일',
   time: '모임 시간',
   location: '장소',
-  fee: '회비',
   rule: '수칙',
 }
 
