@@ -1,0 +1,43 @@
+.notice-card {
+  background: linear-gradient(135deg, #B2EEF4 0%, #A0E8F0 100%);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  margin: 16px 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.notice-card::after {
+  content: '';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.notice-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.notice-card__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notice-card__list li {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.notice-card__label {
+  font-weight: 500;
+}

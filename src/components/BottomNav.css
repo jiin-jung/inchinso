@@ -1,0 +1,39 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  background: var(--white);
+  border-top: 1px solid #EFEFEF;
+  display: flex;
+  padding: 8px 0 20px;
+  z-index: 100;
+}
+
+.bottom-nav__tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  padding: 6px 0;
+  transition: opacity 0.15s;
+}
+
+.bottom-nav__tab span {
+  font-size: 11px;
+  color: #999;
+  font-weight: 400;
+}
+
+.bottom-nav__tab.active span {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.bottom-nav__tab:hover {
+  opacity: 0.75;
+}

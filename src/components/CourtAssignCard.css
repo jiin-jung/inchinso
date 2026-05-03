@@ -1,0 +1,120 @@
+.court-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  box-shadow: var(--shadow);
+  border: 1px solid #F0F0F0;
+}
+
+.court-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.court-card__icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.court-card__desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.court-card__desc strong {
+  color: var(--primary-dark);
+}
+
+.court-card__pending {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.court-card__my-court {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 16px;
+  background: var(--primary-light);
+  border-radius: 10px;
+  width: 100%;
+}
+
+.court-card__my-label {
+  font-size: 11px;
+  color: var(--primary-dark);
+  font-weight: 500;
+}
+
+.court-card__my-num {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--primary-dark);
+}
+
+.court-card__result {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.court-card__result li {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.court-card__result li.highlight {
+  background: var(--primary-light);
+}
+
+.court-card__result strong {
+  color: var(--primary-dark);
+  font-size: 12px;
+}
+
+.court-card__btn {
+  width: 100%;
+  padding: 10px 0;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  transition: background 0.2s;
+  margin-top: auto;
+}
+
+.court-card__btn:hover {
+  background: var(--primary-dark);
+}
+
+.court-card__copy {
+  background: none;
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 500;
+  padding: 2px 0;
+}
+
+.court-card__copy:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

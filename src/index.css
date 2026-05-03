@@ -1,0 +1,45 @@
+:root {
+  --primary: #00BDB4;
+  --primary-dark: #009E96;
+  --primary-light: #E0F7F6;
+  --notice-bg: #B2EEF4;
+  --orange: #F5A623;
+  --text: #1A1A1A;
+  --text-secondary: #555;
+  --text-muted: #999;
+  --bg: #F4F4F4;
+  --white: #FFFFFF;
+  --radius: 16px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  max-width: 430px;
+  background: var(--white);
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,0,0,0.1);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}

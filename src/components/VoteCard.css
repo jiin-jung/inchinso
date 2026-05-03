@@ -1,0 +1,97 @@
+.vote-card {
+  background: var(--primary);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.vote-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.vote-card__count {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.vote-card__num {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1;
+}
+
+.vote-card__max {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.vote-card__bar-wrap {
+  padding: 2px 0;
+}
+
+.vote-card__bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.vote-card__fill {
+  height: 100%;
+  background: var(--white);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.vote-card__waiting {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.vote-card__status {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  align-self: flex-start;
+}
+
+.vote-card__status.confirmed {
+  background: rgba(255, 255, 255, 0.25);
+  color: var(--white);
+}
+
+.vote-card__status.waiting {
+  background: rgba(245, 166, 35, 0.3);
+  color: #FFE082;
+}
+
+.vote-card__btn {
+  width: 100%;
+  padding: 10px 0;
+  background: var(--white);
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  transition: opacity 0.15s;
+  margin-top: auto;
+}
+
+.vote-card__btn:hover {
+  opacity: 0.9;
+}
+
+.vote-card__btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
+}
