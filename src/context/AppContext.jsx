@@ -21,17 +21,10 @@ const INITIAL_NOTICE = {
 
 const AppContext = createContext(null)
 
-export function AppProvider({ children, user }) {
-  // Derive display name from Supabase user metadata
-  const displayName =
-    user?.user_metadata?.full_name ||
-    user?.user_metadata?.name ||
-    user?.email?.split('@')[0] ||
-    '사용자'
+export function AppProvider({ children }) {
+  const currentUser = { id: 'me', name: '박지민' }
 
-  const currentUser = { id: user?.id ?? 'me', name: displayName }
-
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(true)
   const [maxCapacity, setMaxCapacity] = useState(16)
   const [participants, setParticipants] = useState(
     MOCK_PARTICIPANTS.map((p) => ({ ...p, status: 'confirmed' }))
@@ -48,14 +41,14 @@ export function AppProvider({ children, user }) {
       const status = confirmedCount < maxCapacity ? 'confirmed' : 'waiting'
       return [...prev, { ...currentUser, status }]
     })
-  }, [currentUser, maxCapacity])
+  }, [maxCapacity])
 
   const leaveSession = useCallback(() => {
     setParticipants((prev) => {
       const next = prev.filter((p) => p.id !== currentUser.id)
       return next.map((p, i) => ({ ...p, status: i < maxCapacity ? 'confirmed' : 'waiting' }))
     })
-  }, [currentUser.id, maxCapacity])
+  }, [maxCapacity])
 
   const updateMaxCapacity = useCallback((newMax) => {
     setMaxCapacity(newMax)
