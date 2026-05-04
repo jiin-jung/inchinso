@@ -1,19 +1,241 @@
 .home {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding-bottom: 100px;
 }
 
-.home__cards {
-  display: flex;
-  gap: 12px;
-  padding: 0 16px;
+/* ── 캘린더 ── */
+.cal {
+  padding: 16px 16px 8px;
 }
 
-.home__section-title {
+.cal__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.cal__nav-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  color: var(--text-secondary);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+
+.cal__nav-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.cal__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cal__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.cal__weekdays span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.cal__weekdays span:first-child { color: #E53935; }
+.cal__weekdays span:last-child  { color: #1565C0; }
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: none;
+  border-radius: 10px;
+  gap: 2px;
+  transition: background 0.1s;
+  position: relative;
+}
+
+.cal__day:not(:disabled):hover {
+  background: #F5F5F5;
+}
+
+.cal__day.addable:hover {
+  background: var(--primary-light);
+}
+
+.cal__day-num {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.cal__day.today .cal__day-num {
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 700;
+}
+
+.cal__day.has-event .cal__day-num {
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.cal__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.cal__plus {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.cal__day.addable:hover .cal__plus {
+  opacity: 1;
+}
+
+/* ── 이벤트 목록 ── */
+.home__events {
+  padding: 16px 16px 0;
+}
+
+.home__events-title {
   font-size: 15px;
   font-weight: 700;
   color: var(--text);
-  padding: 0 16px;
+  margin-bottom: 12px;
+}
+
+.home__empty {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 28px 0;
+}
+
+.home__event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home__event-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid #F0F0F0;
+  text-align: left;
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+
+.home__event-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.home__event-card:active {
+  transform: scale(0.98);
+}
+
+.home__event-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--primary-light);
+  border-radius: 12px;
+  flex-shrink: 0;
+  gap: 1px;
+}
+
+.home__event-badge-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  line-height: 1;
+}
+
+.home__event-badge-day {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.home__event-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.home__event-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home__event-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home__event-count {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.home__event-confirmed {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.home__event-max {
+  font-size: 12px;
+  color: var(--text-muted);
 }
