@@ -21,6 +21,22 @@
   letter-spacing: -0.3px;
 }
 
+.appbar__back {
+  background: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text);
+  transition: background 0.15s;
+}
+
+.appbar__back:hover {
+  background: var(--primary-light);
+}
+
 .appbar__right {
   display: flex;
   align-items: center;

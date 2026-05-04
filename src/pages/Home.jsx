@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import EventDetail from '../components/EventDetail'
 import EventForm from '../components/EventForm'
 import './Home.css'
 
@@ -13,11 +12,10 @@ function toDateStr(year, month, day) {
 const _today = new Date()
 const todayStr = toDateStr(_today.getFullYear(), _today.getMonth(), _today.getDate())
 
-export default function Home() {
+export default function Home({ onEventSelect }) {
   const { events, isAdmin } = useApp()
   const [viewYear, setViewYear] = useState(_today.getFullYear())
   const [viewMonth, setViewMonth] = useState(_today.getMonth())
-  const [selectedEventId, setSelectedEventId] = useState(null)
   const [createDate, setCreateDate] = useState(null)
 
   const eventMap = Object.fromEntries(events.map(e => [e.date, e]))
@@ -42,7 +40,7 @@ export default function Home() {
     const dateStr = toDateStr(viewYear, viewMonth, day)
     const event = eventMap[dateStr]
     if (event) {
-      setSelectedEventId(event.id)
+      onEventSelect(event.id)
     } else if (isAdmin) {
       setCreateDate(dateStr)
     }
@@ -111,7 +109,7 @@ export default function Home() {
                 <button
                   key={event.id}
                   className="home__event-card"
-                  onClick={() => setSelectedEventId(event.id)}
+                  onClick={() => onEventSelect(event.id)}
                 >
                   <div className="home__event-badge">
                     <span className="home__event-badge-num">{dayNum}</span>
@@ -132,9 +130,6 @@ export default function Home() {
         )}
       </div>
 
-      {selectedEventId && (
-        <EventDetail eventId={selectedEventId} onClose={() => setSelectedEventId(null)} />
-      )}
       {createDate && (
         <EventForm date={createDate} onClose={() => setCreateDate(null)} />
       )}

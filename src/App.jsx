@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
+import EventPage from './pages/EventPage'
 
 const PAGE_TITLES = {
   home: '인친소',
@@ -15,13 +16,27 @@ const PAGE_TITLES = {
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home')
-  const { isAdmin } = useApp()
+  const [eventId, setEventId] = useState(null)
+  const { isAdmin, events } = useApp()
+
+  if (eventId) {
+    const event = events.find(e => e.id === eventId)
+    const title = event ? `${event.displayDate} (${event.day})` : '모임 상세'
+    return (
+      <>
+        <AppBar title={title} isAdmin={isAdmin} onBack={() => setEventId(null)} />
+        <main>
+          <EventPage eventId={eventId} />
+        </main>
+      </>
+    )
+  }
 
   return (
     <>
       <AppBar title={PAGE_TITLES[activeTab]} isAdmin={isAdmin} />
       <main>
-        {activeTab === 'home' && <Home />}
+        {activeTab === 'home' && <Home onEventSelect={setEventId} />}
         {activeTab === 'profile' && <Profile />}
         {activeTab === 'settings' && <Settings />}
       </main>
@@ -33,9 +48,7 @@ function AppContent() {
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null)
 
-  if (!currentUser) {
-    return <Login onLogin={setCurrentUser} />
-  }
+  if (!currentUser) return <Login onLogin={setCurrentUser} />
 
   return (
     <AppProvider user={currentUser} onSignOut={() => setCurrentUser(null)}>

@@ -1,0 +1,353 @@
+.ep {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+.ep__not-found {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 60px 24px;
+  font-size: 14px;
+}
+
+/* 상단 요약 */
+.ep__hero {
+  background: linear-gradient(135deg, var(--primary-light) 0%, #C8F5F2 100%);
+  padding: 20px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep__time,
+.ep__location,
+.ep__rule {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* 섹션 공통 */
+.ep__section {
+  padding: 20px 20px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.ep__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ep__section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ep__edit-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: none;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 3px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--primary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.ep__edit-btn.active {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* 정원 */
+.ep__cap-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ep__cap-num {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+
+.ep__cap-max {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.ep__cap-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F5F5F5;
+  border-radius: 20px;
+  padding: 5px 12px;
+}
+
+.ep__cap-ctrl button {
+  width: 26px;
+  height: 26px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.ep__cap-ctrl span {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.ep__bar {
+  height: 8px;
+  background: #F0F0F0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.ep__bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.ep__waiting-msg {
+  font-size: 13px;
+  color: var(--orange);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.ep__my-status {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.ep__my-status.confirmed {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.ep__my-status.waiting {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.ep__join-btn {
+  width: 100%;
+  padding: 14px 0;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: opacity 0.15s;
+}
+
+.ep__join-btn:hover { opacity: 0.9; }
+
+.ep__join-btn.leave {
+  background: #F0F0F0;
+  color: var(--text-secondary);
+}
+
+/* 참가자 칩 */
+.ep__chips-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.ep__chips-label.waiting {
+  color: #E65100;
+  margin-top: 14px;
+}
+
+.ep__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ep__chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 13px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-radius: 20px;
+}
+
+.ep__chip.me {
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 700;
+}
+
+.ep__chip.waiting {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.ep__chip.waiting.me {
+  background: var(--orange);
+  color: var(--white);
+}
+
+.ep__chip-remove {
+  background: none;
+  font-size: 16px;
+  line-height: 1;
+  color: inherit;
+  opacity: 0.5;
+  font-weight: 700;
+  padding: 0 0 0 3px;
+  transition: opacity 0.1s;
+}
+
+.ep__chip-remove:hover { opacity: 1; }
+
+.ep__add-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ep__add-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ep__add-input:focus { border-color: var(--primary); }
+
+.ep__add-btn {
+  padding: 10px 18px;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  white-space: nowrap;
+}
+
+.ep__add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* 코트 */
+.ep__my-court {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.ep__my-court strong {
+  color: var(--primary-dark);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.ep__court-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.ep__court-list li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.ep__court-list li.highlight {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.ep__court-list strong {
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ep__copy-btn {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 600;
+  background: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.ep__action-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: background 0.15s;
+}
+
+.ep__action-btn:hover { background: var(--primary-dark); }
+
+.ep__pending {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* 삭제 */
+.ep__delete-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: none;
+  color: #E53935;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #FFCDD2;
+  transition: background 0.15s;
+}
+
+.ep__delete-btn:hover { background: #FFEBEE; }
