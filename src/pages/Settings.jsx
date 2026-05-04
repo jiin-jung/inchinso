@@ -114,7 +114,7 @@ function DayPickerCard({ day, onChange }) {
 }
 
 export default function Settings() {
-  const { isAdmin, setIsAdmin, maxCapacity, updateMaxCapacity, notice, setNotice } = useApp()
+  const { isAdmin, setIsAdmin, maxCapacity, updateMaxCapacity, notice, setNotice, signOut } = useApp()
   const [draft, setDraft] = useState({ ...notice })
 
   const handleSave = () => setNotice({ ...draft })
@@ -189,7 +189,7 @@ export default function Settings() {
               {desc ? <span className="settings__desc">{desc}</span> : <span className="settings__arrow">›</span>}
             </li>
           ))}
-          <li className="settings__item danger">
+          <li className="settings__item danger" onClick={signOut} style={{ cursor: 'pointer' }}>
             <span className="settings__label">로그아웃</span>
             <span className="settings__arrow">›</span>
           </li>

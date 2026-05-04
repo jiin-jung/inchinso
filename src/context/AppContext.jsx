@@ -22,10 +22,10 @@ const INITIAL_NOTICE = {
 
 const AppContext = createContext(null)
 
-export function AppProvider({ children }) {
-  const currentUser = { id: 'me', name: '박지민' }
+export function AppProvider({ children, user, onSignOut }) {
+  const currentUser = { id: 'me', name: user.name }
 
-  const [isAdmin, setIsAdmin] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(user.isAdmin)
   const [maxCapacity, setMaxCapacity] = useState(16)
   const [participants, setParticipants] = useState(
     MOCK_PARTICIPANTS.map((p) => ({ ...p, status: 'confirmed' }))
@@ -81,6 +81,7 @@ export function AppProvider({ children }) {
         joinSession, leaveSession,
         notice, setNotice,
         courts, assignCourts, setCourts,
+        signOut: onSignOut,
       }}
     >
       {children}

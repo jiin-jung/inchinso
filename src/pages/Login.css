@@ -48,7 +48,7 @@
   padding: 36px 24px 48px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
 }
 
@@ -59,46 +59,84 @@
   letter-spacing: -0.5px;
 }
 
-.login__desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
+.login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.login__google-btn {
+.login__field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.login__input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  background: #F7F7F7;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.login__input:focus {
+  background: var(--white);
+  border-color: var(--primary);
+}
+
+.login__input::placeholder {
+  color: #C0C0C0;
+}
+
+.login__role-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.login__role-btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-secondary);
+  background: #F0F0F0;
+  border-radius: 12px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.login__role-btn.active {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.login__submit-btn {
   width: 100%;
   padding: 16px 0;
-  background: var(--white);
-  border: 1.5px solid #E0E0E0;
-  border-radius: 14px;
   font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 700;
   font-family: 'Noto Sans KR', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  color: var(--white);
+  background: var(--primary);
+  border-radius: 14px;
+  transition: opacity 0.15s, transform 0.1s;
+  margin-top: 4px;
 }
 
-.login__google-btn:hover:not(:disabled) {
-  background: #F8F8F8;
-  border-color: #CCC;
+.login__submit-btn:hover:not(:disabled) {
+  opacity: 0.9;
 }
 
-.login__google-btn:active:not(:disabled) {
+.login__submit-btn:active:not(:disabled) {
   transform: scale(0.98);
 }
 
-.login__google-btn:disabled {
-  opacity: 0.6;
+.login__submit-btn:disabled {
+  background: #CCC;
   cursor: not-allowed;
-}
-
-.login__notice {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-align: center;
-  margin-top: 4px;
 }

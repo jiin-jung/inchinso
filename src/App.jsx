@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import Login from './pages/Login'
 
 const PAGE_TITLES = {
   home: '인친소',
@@ -30,8 +31,14 @@ function AppContent() {
 }
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(null)
+
+  if (!currentUser) {
+    return <Login onLogin={setCurrentUser} />
+  }
+
   return (
-    <AppProvider>
+    <AppProvider user={currentUser} onSignOut={() => setCurrentUser(null)}>
       <AppContent />
     </AppProvider>
   )
