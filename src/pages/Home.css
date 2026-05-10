@@ -127,6 +127,131 @@
   opacity: 1;
 }
 
+/* ── 공지사항 ── */
+.home__notice {
+  margin: 0 16px 4px;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid #E8F5E9;
+  overflow: hidden;
+}
+
+.home__notice-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 8px;
+}
+
+.home__notice-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.home__notice-add {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.home__notice-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 8px 14px 12px;
+}
+
+.home__notice-item {
+  padding: 8px 14px 10px;
+  border-top: 1px solid #F5F5F5;
+  width: 100%;
+  text-align: left;
+  background: none;
+  cursor: pointer;
+}
+
+.home__notice-item:active { background: #F9F9F9; }
+
+.home__notice-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.home__notice-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.home__notice-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.home__notice-del {
+  font-size: 11px;
+  color: #E53935;
+  background: none;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.home__notice-form {
+  padding: 10px 14px 12px;
+  border-top: 1px solid #F5F5F5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home__notice-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 8px;
+  resize: none;
+  outline: none;
+  color: var(--text);
+  line-height: 1.5;
+  transition: border-color 0.15s;
+}
+
+.home__notice-input:focus { border-color: var(--primary); }
+
+.home__notice-form-btns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.home__notice-btn {
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: opacity 0.15s;
+}
+
+.home__notice-btn--cancel {
+  background: #F5F5F5;
+  color: var(--text-secondary);
+}
+
+.home__notice-btn--submit {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.home__notice-btn--submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* ── 이벤트 목록 ── */
 .home__events {
   padding: 16px 16px 0;
@@ -238,4 +363,164 @@
 .home__event-max {
   font-size: 12px;
   color: var(--text-muted);
+}
+
+/* ── 미니 카드 드롭업 ── */
+.mini-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.45);
+  animation: overlayIn 0.2s ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mini-card {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px 32px;
+  animation: slideUp 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.mini-card__handle {
+  width: 36px;
+  height: 4px;
+  background: #E0E0E0;
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.mini-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.mini-card__date {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.mini-card__meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.mini-card__close {
+  font-size: 24px;
+  color: var(--text-muted);
+  background: none;
+  line-height: 1;
+  padding: 0 2px;
+  margin-top: -2px;
+}
+
+.mini-card__bar {
+  height: 6px;
+  background: #F0F0F0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.mini-card__bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.mini-card__count-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.mini-card__count-num {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+
+.mini-card__count-max {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.mini-card__status {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.mini-card__status.confirmed {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.mini-card__status.waiting {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.mini-card__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mini-card__join-btn {
+  flex: 1;
+  padding: 14px 0;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: opacity 0.15s;
+}
+
+.mini-card__join-btn:hover { opacity: 0.9; }
+
+.mini-card__join-btn.leave {
+  background: #F0F0F0;
+  color: var(--text-secondary);
+}
+
+.mini-card__open-btn {
+  flex: 1;
+  padding: 14px 0;
+  background: none;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1.5px solid var(--primary);
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: background 0.15s;
+}
+
+.mini-card__open-btn:hover {
+  background: var(--primary-light);
 }

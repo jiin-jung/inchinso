@@ -1,6 +1,6 @@
 import './BottomNav.css'
 
-const TABS = [
+const ALL_TABS = [
   {
     id: 'home',
     label: '홈',
@@ -8,6 +8,19 @@ const TABS = [
       <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? 'var(--primary)' : 'none'} stroke={active ? 'var(--primary)' : '#999'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
         <polyline points="9 21 9 12 15 12 15 21" />
+      </svg>
+    ),
+  },
+  {
+    id: 'members',
+    label: '회원',
+    adminOnly: true,
+    icon: (active) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--primary)' : '#999'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
   },
@@ -33,10 +46,11 @@ const TABS = [
   },
 ]
 
-export default function BottomNav({ activeTab, setActiveTab }) {
+export default function BottomNav({ activeTab, setActiveTab, isAdmin }) {
+  const tabs = ALL_TABS.filter(t => !t.adminOnly || isAdmin)
   return (
     <nav className="bottom-nav">
-      {TABS.map(({ id, label, icon }) => {
+      {tabs.map(({ id, label, icon }) => {
         const active = activeTab === id
         return (
           <button

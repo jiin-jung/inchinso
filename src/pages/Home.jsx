@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { getEventStats } from '../utils/eventStats'
 import EventForm from '../components/EventForm'
 import './Home.css'
 
@@ -12,11 +13,73 @@ function toDateStr(year, month, day) {
 const _today = new Date()
 const todayStr = toDateStr(_today.getFullYear(), _today.getMonth(), _today.getDate())
 
-export default function Home({ onEventSelect }) {
-  const { events, isAdmin } = useApp()
+function EventMiniCard({ event, onOpen, onClose }) {
+  const { currentUser, updateEvent } = useApp()
+  const { confirmed, myStatus, isFull, pct } = getEventStats(event, currentUser.id)
+
+  return (
+    <div className="mini-overlay" onClick={onClose}>
+      <div className="mini-card" onClick={e => e.stopPropagation()}>
+        <div className="mini-card__handle" />
+        <div className="mini-card__header">
+          <div>
+            <p className="mini-card__date">{event.displayDate} ({event.day})</p>
+            <p className="mini-card__meta">{event.time} · {event.location}</p>
+          </div>
+          <button className="mini-card__close" onClick={onClose}>×</button>
+        </div>
+
+        <div className="mini-card__bar">
+          <div className="mini-card__bar-fill" style={{ width: `${pct}%` }} />
+        </div>
+        <div className="mini-card__count-row">
+          <span className="mini-card__count-num">{confirmed.length}</span>
+          <span className="mini-card__count-max">/{event.maxCapacity}명</span>
+          {myStatus && (
+            <span className={`mini-card__status ${myStatus}`}>
+              {myStatus === 'confirmed' ? '✓ 확정' : '⏳ 대기'}
+            </span>
+          )}
+        </div>
+
+        <div className="mini-card__actions">
+          <button
+            className={`mini-card__join-btn${myStatus ? ' leave' : ''}`}
+            onClick={() => myStatus
+              ? updateEvent(event.id, 'leave', { userId: currentUser.id })
+              : updateEvent(event.id, 'join', { user: currentUser })
+            }
+          >
+            {myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
+          </button>
+          <button className="mini-card__open-btn" onClick={() => onOpen(event.id)}>
+            상세 보기 →
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function Home({ onEventSelect, onNoticeSelect }) {
+  const { events, isAdmin, notices, addNotice, deleteNotice, refreshSessions } = useApp()
   const [viewYear, setViewYear] = useState(_today.getFullYear())
   const [viewMonth, setViewMonth] = useState(_today.getMonth())
   const [createDate, setCreateDate] = useState(null)
+  const [previewId, setPreviewId] = useState(null)
+  const [addingNotice, setAddingNotice] = useState(false)
+  const [noticeText, setNoticeText] = useState('')
+
+  useEffect(() => {
+    refreshSessions(viewYear, viewMonth + 1)
+  }, [refreshSessions, viewMonth, viewYear])
+
+  const handleAddNotice = () => {
+    if (!noticeText.trim()) return
+    addNotice(noticeText.trim())
+    setNoticeText('')
+    setAddingNotice(false)
+  }
 
   const eventMap = Object.fromEntries(events.map(e => [e.date, e]))
 
@@ -40,7 +103,7 @@ export default function Home({ onEventSelect }) {
     const dateStr = toDateStr(viewYear, viewMonth, day)
     const event = eventMap[dateStr]
     if (event) {
-      onEventSelect(event.id)
+      setPreviewId(event.id)
     } else if (isAdmin) {
       setCreateDate(dateStr)
     }
@@ -50,6 +113,8 @@ export default function Home({ onEventSelect }) {
   const monthEvents = events
     .filter(e => e.date.startsWith(monthStr))
     .sort((a, b) => a.date.localeCompare(b.date))
+
+  const previewEvent = previewId ? events.find(e => e.id === previewId) : null
 
   return (
     <div className="home">
@@ -91,6 +156,51 @@ export default function Home({ onEventSelect }) {
         </div>
       </div>
 
+      {/* 공지사항 */}
+      {(notices.length > 0 || isAdmin) && (
+        <div className="home__notice">
+          <div className="home__notice-header">
+            <span className="home__notice-title">📢 공지사항</span>
+            {isAdmin && !addingNotice && (
+              <button className="home__notice-add" onClick={() => setAddingNotice(true)}>+ 추가</button>
+            )}
+          </div>
+
+          {notices.length === 0 && !addingNotice && (
+            <p className="home__notice-empty">등록된 공지가 없습니다</p>
+          )}
+
+          {notices.map(n => (
+            <button key={n.id} className="home__notice-item" onClick={() => onNoticeSelect(n.id)}>
+              <p className="home__notice-text">{n.text}</p>
+              <div className="home__notice-meta">
+                <span className="home__notice-date">{n.createdAt}</span>
+                {isAdmin && (
+                  <button className="home__notice-del" onClick={e => { e.stopPropagation(); deleteNotice(n.id) }}>삭제</button>
+                )}
+              </div>
+            </button>
+          ))}
+
+          {addingNotice && (
+            <div className="home__notice-form">
+              <textarea
+                className="home__notice-input"
+                placeholder="공지 내용을 입력하세요"
+                value={noticeText}
+                onChange={e => setNoticeText(e.target.value)}
+                rows={3}
+                autoFocus
+              />
+              <div className="home__notice-form-btns">
+                <button className="home__notice-btn home__notice-btn--cancel" onClick={() => { setAddingNotice(false); setNoticeText('') }}>취소</button>
+                <button className="home__notice-btn home__notice-btn--submit" onClick={handleAddNotice} disabled={!noticeText.trim()}>등록</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* 이번 달 모임 목록 */}
       <div className="home__events">
         <h2 className="home__events-title">{viewMonth + 1}월 모임</h2>
@@ -109,7 +219,7 @@ export default function Home({ onEventSelect }) {
                 <button
                   key={event.id}
                   className="home__event-card"
-                  onClick={() => onEventSelect(event.id)}
+                  onClick={() => setPreviewId(event.id)}
                 >
                   <div className="home__event-badge">
                     <span className="home__event-badge-num">{dayNum}</span>
@@ -132,6 +242,14 @@ export default function Home({ onEventSelect }) {
 
       {createDate && (
         <EventForm date={createDate} onClose={() => setCreateDate(null)} />
+      )}
+
+      {previewEvent && (
+        <EventMiniCard
+          event={previewEvent}
+          onOpen={(id) => { setPreviewId(null); onEventSelect(id) }}
+          onClose={() => setPreviewId(null)}
+        />
       )}
     </div>
   )

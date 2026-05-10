@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import CourtMap from '../components/CourtMap'
+import { getEventStats } from '../utils/eventStats'
 import './EventPage.css'
+
+const EMPTY_COURTS = {}
 
 export default function EventPage({ eventId }) {
   const { events, currentUser, isAdmin, updateEvent, deleteEvent } = useApp()
@@ -12,15 +16,17 @@ export default function EventPage({ eventId }) {
 
   if (!event) return <p className="ep__not-found">모임을 찾을 수 없어요</p>
 
-  const confirmed = event.participants.filter(p => p.status === 'confirmed')
-  const waiting   = event.participants.filter(p => p.status === 'waiting')
-  const myStatus  = event.participants.find(p => p.id === currentUser.id)?.status ?? null
-  const isFull    = confirmed.length >= event.maxCapacity
-  const pct       = Math.min((confirmed.length / event.maxCapacity) * 100, 100)
+  const { confirmed, waiting, myStatus, isFull, pct } = getEventStats(event, currentUser.id)
+  const activeCourts = event.activeCourts ?? []
 
   const myCourt = event.courts
-    ? Object.entries(event.courts).find(([, m]) => m.includes(currentUser.name))?.[0]
+    ? Object.entries(event.courts).find(([, c]) =>
+        c.playing.includes(currentUser.name) || c.waiting.includes(currentUser.name)
+      )?.[0]
     : null
+  const myCourtWaiting = myCourt
+    ? event.courts[myCourt]?.waiting.includes(currentUser.name)
+    : false
 
   const handleAdd = () => {
     if (!newName.trim()) return
@@ -31,7 +37,11 @@ export default function EventPage({ eventId }) {
   const handleCopy = () => {
     if (!event.courts) return
     const text = Object.entries(event.courts)
-      .map(([n, members]) => `${n}번 코트: ${members.join(', ')}`)
+      .map(([n, c]) => {
+        let line = `${n}번 코트: ${c.playing.join(', ')}`
+        if (c.waiting.length) line += ` / 대기: ${c.waiting.join(', ')}`
+        return line
+      })
       .join('\n')
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
@@ -159,26 +169,58 @@ export default function EventPage({ eventId }) {
             {myCourt && (
               <div className="ep__my-court">
                 내 코트 <strong>{myCourt}번</strong>
+                {myCourtWaiting && <span className="ep__my-court-wait">대기</span>}
               </div>
             )}
+            <CourtMap courts={event.courts} activeCourts={activeCourts} myCourt={myCourt} />
             <ul className="ep__court-list">
-              {Object.entries(event.courts).map(([num, members]) => (
+              {Object.entries(event.courts).map(([num, court]) => (
                 <li key={num} className={myCourt === num ? 'highlight' : ''}>
                   <strong>{num}번</strong>
-                  <span>{members.join(', ')}</span>
+                  <span>{court.playing.join(', ')}</span>
+                  {court.waiting.length > 0 && (
+                    <span className="ep__court-wait">대기: {court.waiting.join(', ')}</span>
+                  )}
                 </li>
               ))}
             </ul>
             {isAdmin && (
-              <button className="ep__action-btn" onClick={() => updateEvent(eventId, 'assignCourts')}>
+              <button className="ep__action-btn" onClick={() => updateEvent(eventId, 'resetCourts')}>
                 다시 배정
               </button>
             )}
           </>
         ) : isAdmin ? (
-          <button className="ep__action-btn" onClick={() => updateEvent(eventId, 'assignCourts')}>
-            코트 배정하기
-          </button>
+          <>
+            <p className="ep__court-hint">사용할 코트를 선택하세요 (1~5번)</p>
+            <div className="ep__court-picker">
+              {[1, 2, 3, 4, 5].map(n => {
+                const active = activeCourts.includes(n)
+                return (
+                  <button
+                    key={n}
+                    className={`ep__court-tile${active ? ' selected' : ''}`}
+                    onClick={() => {
+                      const next = active ? activeCourts.filter(c => c !== n) : [...activeCourts, n]
+                      updateEvent(eventId, 'selectCourts', { courts: next })
+                    }}
+                  >
+                    {n}번
+                  </button>
+                )
+              })}
+            </div>
+            {activeCourts.length > 0 && (
+              <CourtMap courts={EMPTY_COURTS} activeCourts={activeCourts} myCourt={null} />
+            )}
+            <button
+              className="ep__action-btn"
+              disabled={activeCourts.length === 0}
+              onClick={() => updateEvent(eventId, 'assignCourts')}
+            >
+              코트 배정하기
+            </button>
+          </>
         ) : (
           <p className="ep__pending">운영진이 배정 중이에요</p>
         )}

@@ -9,7 +9,7 @@ const GENERAL_SETTINGS = [
 ]
 
 export default function Settings() {
-  const { isAdmin, setIsAdmin, signOut } = useApp()
+  const { isAdmin, signOut } = useApp()
 
   return (
     <div className="settings">
@@ -21,8 +21,8 @@ export default function Settings() {
           </div>
           <button
             className={`settings__toggle${isAdmin ? ' on' : ''}`}
-            onClick={() => setIsAdmin(v => !v)}
             aria-label="운영진 모드 토글"
+            disabled
           >
             <span className="settings__toggle-thumb" />
           </button>

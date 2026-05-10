@@ -16,7 +16,7 @@ export default function EventForm({ date, onClose }) {
 
   const [form, setForm] = useState({
     time: '18:00',
-    location: '인천대 체육관 2층',
+    location: '인천대 21호 체육관',
     rule: '10분 전 도착',
     maxCapacity: 16,
   })
@@ -42,7 +42,7 @@ export default function EventForm({ date, onClose }) {
 
         {[
           { key: 'time',     label: '시간', placeholder: '18:00' },
-          { key: 'location', label: '장소', placeholder: '인천대 체육관 2층' },
+          { key: 'location', label: '장소', placeholder: '인천대 21호 체육관' },
           { key: 'rule',     label: '수칙', placeholder: '10분 전 도착' },
         ].map(({ key, label, placeholder }) => (
           <div key={key} className="ef__field">

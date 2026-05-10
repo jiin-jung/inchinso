@@ -278,6 +278,17 @@
   font-weight: 900;
 }
 
+.ep__my-court-wait {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--orange);
+  background: #FFF3E0;
+  padding: 2px 8px;
+  border-radius: 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
 .ep__court-list {
   list-style: none;
   display: flex;
@@ -307,6 +318,13 @@
   flex-shrink: 0;
 }
 
+.ep__court-wait {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
 .ep__copy-btn {
   font-size: 12px;
   color: var(--orange);
@@ -328,6 +346,45 @@
 }
 
 .ep__action-btn:hover { background: var(--primary-dark); }
+
+.ep__action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ep__action-btn:disabled:hover { background: var(--primary); }
+
+/* 코트 선택 */
+.ep__court-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.ep__court-picker {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ep__court-tile {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: #F5F5F5;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.ep__court-tile.selected {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-color: var(--primary);
+}
 
 .ep__pending {
   font-size: 14px;

@@ -1,0 +1,177 @@
+.mp {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* 요약 카드 */
+.mp__summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: linear-gradient(135deg, var(--primary-light) 0%, #C8F5F2 100%);
+  padding: 20px 24px;
+}
+
+.mp__summary-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.mp__summary-num {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--primary-dark);
+  line-height: 1;
+}
+
+.mp__summary-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  opacity: 0.7;
+}
+
+.mp__summary-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(0, 158, 150, 0.2);
+}
+
+/* 목록 */
+.mp__list {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 10px;
+}
+
+.mp__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid #F0F0F0;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+}
+
+/* 아바타 */
+.mp__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp__avatar span {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+/* 정보 */
+.mp__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mp__name-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+.mp__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mp__role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.mp__role-badge.user {
+  background: #F5F5F5;
+  color: var(--text-secondary);
+}
+
+.mp__role-badge.admin {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+/* 출석 바 */
+.mp__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.mp__bar {
+  flex: 1;
+  height: 5px;
+  background: #F0F0F0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mp__bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.mp__rate {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  flex-shrink: 0;
+  min-width: 28px;
+  text-align: right;
+}
+
+.mp__stat {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* 역할 변경 버튼 */
+.mp__toggle {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.mp__toggle.user {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 1px solid var(--primary);
+}
+
+.mp__toggle.admin {
+  background: #FFF3E0;
+  color: #E65100;
+  border: 1px solid #FFCC80;
+}

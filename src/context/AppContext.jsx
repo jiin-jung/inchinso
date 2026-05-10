@@ -1,127 +1,314 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { api, clearAuth, readStoredAuth } from '../lib/api'
 
-const MOCK_PARTICIPANTS = [
-  { id: '1', name: '김철수' },
-  { id: '2', name: '이영희' },
-  { id: '3', name: '박민수' },
-  { id: '4', name: '최지우' },
-  { id: '5', name: '정민준' },
-  { id: '6', name: '한소영' },
-  { id: '7', name: '오태양' },
-  { id: '8', name: '윤지수' },
-  { id: '9', name: '강다은' },
-]
-
-const INITIAL_EVENTS = [
-  {
-    id: '1',
-    date: '2026-05-09',
-    displayDate: '5월 9일',
-    day: '토요일',
-    time: '18:00',
-    location: '인천대 체육관 2층',
-    rule: '10분 전 도착',
-    maxCapacity: 16,
-    participants: MOCK_PARTICIPANTS.map(p => ({ ...p, status: 'confirmed' })),
-    courts: null,
-  },
-  {
-    id: '2',
-    date: '2026-05-16',
-    displayDate: '5월 16일',
-    day: '토요일',
-    time: '18:00',
-    location: '인천대 체육관 2층',
-    rule: '10분 전 도착',
-    maxCapacity: 16,
-    participants: [],
-    courts: null,
-  },
-]
+const CLUB_ID = import.meta.env.VITE_CLUB_ID ?? '1'
+const KR_DAYS = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
 
 const AppContext = createContext(null)
 
-export function AppProvider({ children, user, onSignOut }) {
-  const currentUser = { id: 'me', name: user.name }
-  const [isAdmin, setIsAdmin] = useState(user.isAdmin)
-  const [events, setEvents] = useState(INITIAL_EVENTS)
+function displayDate(dateStr) {
+  const [, month, day] = dateStr.split('-')
+  return `${Number(month)}월 ${Number(day)}일`
+}
 
-  const createEvent = useCallback((data) => {
-    setEvents(prev => [
-      ...prev,
-      { id: Date.now().toString(), ...data, participants: [], courts: null },
-    ])
+function mapSession(session, participation = null, participants = null, courts = null, currentUser = null) {
+  const date = session.sessionDate
+  const confirmedCount = session.confirmedCount ?? participants?.length ?? 0
+  const placeholders = Array.from({ length: confirmedCount }, (_, index) => ({
+    id: `confirmed-${session.id}-${index}`,
+    name: `참가자 ${index + 1}`,
+    status: 'confirmed',
+  }))
+
+  const participantList = participants?.length ? participants : placeholders
+  const hasMe = currentUser && participantList.some(participant => participant.id === currentUser.id)
+  const nextParticipants = participation?.applied && currentUser && !hasMe
+    ? [...participantList, { id: currentUser.id, name: currentUser.name, status: 'confirmed' }]
+    : participantList
+
+  return {
+    id: String(session.id),
+    date,
+    displayDate: displayDate(date),
+    day: KR_DAYS[new Date(date).getDay()],
+    time: (session.startTime ?? '').slice(0, 5),
+    endTime: (session.endTime ?? '').slice(0, 5),
+    location: session.location,
+    rule: session.rules,
+    maxCapacity: session.maxParticipants,
+    status: session.status,
+    participants: nextParticipants,
+    activeCourts: courts ? Object.keys(courts).map(Number) : [],
+    courts,
+    applied: participation?.applied ?? false,
+  }
+}
+
+function mapUser(user) {
+  return {
+    id: String(user.id),
+    name: user.name,
+    email: user.email,
+    role: user.role === 'ADMIN' ? 'admin' : 'user',
+    profileImageUrl: user.profileImageUrl,
+    totalParticipations: user.totalParticipations ?? 0,
+    monthlyParticipations: user.monthlyParticipations ?? 0,
+  }
+}
+
+function mapNotice(notice) {
+  return {
+    id: String(notice.id),
+    title: notice.title,
+    text: notice.content ?? notice.title,
+    createdAt: (notice.createdAt ?? '').slice(0, 10),
+    pinned: notice.pinned,
+    authorName: notice.authorName,
+    imageUrls: notice.imageUrls ?? [],
+  }
+}
+
+function makeNoticeForm(text) {
+  const formData = new FormData()
+  formData.append('title', text.slice(0, 30) || '공지사항')
+  formData.append('content', text)
+  formData.append('pinned', 'false')
+  return formData
+}
+
+function mapParticipants(rawParticipants = []) {
+  return rawParticipants.map((participant, index) => {
+    const user = participant.user ?? participant
+    return {
+      id: String(user.id ?? user.userId ?? participant.userId ?? `p-${index}`),
+      name: user.name ?? participant.name ?? `참가자 ${index + 1}`,
+      status: participant.status === 'WAITING' ? 'waiting' : 'confirmed',
+    }
+  })
+}
+
+function mapCourts(rawCourts = []) {
+  if (!Array.isArray(rawCourts) || rawCourts.length === 0) return null
+  return rawCourts.reduce((acc, assignment) => {
+    const courtNumber = String(assignment.courtNumber)
+    if (!acc[courtNumber]) acc[courtNumber] = { playing: [], waiting: [] }
+    const name = assignment.userName ?? assignment.name ?? assignment.user?.name
+    if (name) acc[courtNumber].playing.push(name)
+    return acc
+  }, {})
+}
+
+function getCurrentYearMonth() {
+  const today = new Date()
+  return { year: today.getFullYear(), month: today.getMonth() + 1 }
+}
+
+export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
+  const [currentUser, setCurrentUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [events, setEvents] = useState([])
+  const [members, setMembers] = useState([])
+  const [notices, setNotices] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const signOut = useCallback(async () => {
+    const stored = readStoredAuth()
+    try {
+      if (stored?.refreshToken) await api.logout(stored.refreshToken)
+    } catch {
+      // Local sign-out should still proceed when the server token is already invalid.
+    }
+    clearAuth()
+    onAuthChange(null)
+  }, [onAuthChange])
+
+  const refreshNotices = useCallback(async () => {
+    const data = await api.notices()
+    setNotices((data ?? []).map(mapNotice))
   }, [])
 
-  const updateEvent = useCallback((eventId, action, payload = {}) => {
-    setEvents(prev => prev.map(event => {
-      if (event.id !== eventId) return event
-      switch (action) {
-        case 'join': {
-          if (event.participants.find(p => p.id === payload.user.id)) return event
-          const count = event.participants.filter(p => p.status === 'confirmed').length
-          return {
-            ...event,
-            participants: [...event.participants, {
-              ...payload.user,
-              status: count < event.maxCapacity ? 'confirmed' : 'waiting',
-            }],
-          }
-        }
-        case 'leave': {
-          const next = event.participants.filter(p => p.id !== payload.userId)
-          return { ...event, participants: next.map((p, i) => ({ ...p, status: i < event.maxCapacity ? 'confirmed' : 'waiting' })) }
-        }
-        case 'remove': {
-          const next = event.participants.filter(p => p.id !== payload.participantId)
-          return { ...event, participants: next.map((p, i) => ({ ...p, status: i < event.maxCapacity ? 'confirmed' : 'waiting' })) }
-        }
-        case 'add': {
-          const count = event.participants.filter(p => p.status === 'confirmed').length
-          return {
-            ...event,
-            participants: [...event.participants, {
-              id: `m-${Date.now()}`,
-              name: payload.name,
-              status: count < event.maxCapacity ? 'confirmed' : 'waiting',
-            }],
-          }
-        }
-        case 'updateCapacity': {
-          return {
-            ...event,
-            maxCapacity: payload.newMax,
-            participants: event.participants.map((p, i) => ({ ...p, status: i < payload.newMax ? 'confirmed' : 'waiting' })),
-          }
-        }
-        case 'assignCourts': {
-          const confirmed = event.participants.filter(p => p.status === 'confirmed')
-          const shuffled = [...confirmed].sort(() => Math.random() - 0.5)
-          const courts = {}
-          shuffled.forEach((p, i) => {
-            const num = Math.floor(i / 4) + 1
-            if (num > 6) return
-            if (!courts[num]) courts[num] = []
-            courts[num].push(p.name)
-          })
-          return { ...event, courts }
-        }
-        default: return event
-      }
+  const refreshMembers = useCallback(async (admin) => {
+    if (!admin) {
+      setMembers([])
+      return
+    }
+    const data = await api.users()
+    setMembers((data ?? []).map(mapUser))
+  }, [])
+
+  const refreshSessions = useCallback(async (year, month, userOverride = null) => {
+    const viewer = userOverride ?? currentUser
+    const sessions = await api.sessions(year, month)
+    const mapped = await Promise.all((sessions ?? []).map(async (session) => {
+      const [participation, participants, courts] = await Promise.all([
+        api.myParticipation(session.id).catch(() => null),
+        api.participants(session.id).then(mapParticipants).catch(() => null),
+        api.courts(session.id).then(mapCourts).catch(() => null),
+      ])
+      return mapSession(session, participation, participants, courts, viewer)
     }))
+
+    setEvents(prev => {
+      const monthPrefix = `${year}-${String(month).padStart(2, '0')}`
+      const others = prev.filter(event => !event.date.startsWith(monthPrefix))
+      return [...others, ...mapped]
+    })
+  }, [currentUser])
+
+  const loadInitialData = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const me = await api.me()
+      const user = mapUser(me)
+      const admin = user.role === 'admin'
+      setCurrentUser(user)
+      setIsAdmin(admin)
+
+      const { year, month } = getCurrentYearMonth()
+      await Promise.all([
+        refreshSessions(year, month, user),
+        refreshNotices(),
+        refreshMembers(admin),
+      ])
+    } catch (err) {
+      setError(err.message)
+      if (err.message.includes('토큰') || err.message.includes('인증')) {
+        clearAuth()
+        onAuthChange(null)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [onAuthChange, refreshMembers, refreshNotices, refreshSessions])
+
+  useEffect(() => {
+    if (!needsOnboarding) loadInitialData()
+    else setLoading(false)
+  }, [loadInitialData, needsOnboarding])
+
+  const completeOnboarding = useCallback(async (name) => {
+    await api.onboarding(name)
+    window.history.replaceState({}, '', '/')
+    await loadInitialData()
+  }, [loadInitialData])
+
+  const toggleRole = useCallback(async (memberId) => {
+    const member = members.find(m => m.id === memberId)
+    if (!member) return
+    if (member.role === 'admin') await api.revokeAdmin(memberId)
+    else await api.grantAdmin(memberId)
+    await refreshMembers(true)
+  }, [members, refreshMembers])
+
+  const addNotice = useCallback(async (text) => {
+    await api.createNotice(makeNoticeForm(text))
+    await refreshNotices()
+  }, [refreshNotices])
+
+  const deleteNotice = useCallback(async (noticeId) => {
+    await api.deleteNotice(noticeId)
+    setNotices(prev => prev.filter(n => n.id !== noticeId))
   }, [])
 
-  const deleteEvent = useCallback((eventId) => {
+  const updateNotice = useCallback(async (noticeId, text) => {
+    await api.updateNotice(noticeId, makeNoticeForm(text))
+    await refreshNotices()
+  }, [refreshNotices])
+
+  const createEvent = useCallback(async (data) => {
+    await api.createSession({
+      sessionDate: data.date,
+      startTime: `${data.time}:00`,
+      endTime: data.endTime ? `${data.endTime}:00` : '21:00:00',
+      location: data.location,
+      rules: data.rule,
+      maxParticipants: data.maxCapacity,
+    })
+    const [year, month] = data.date.split('-').map(Number)
+    await refreshSessions(year, month)
+  }, [refreshSessions])
+
+  const updateEvent = useCallback(async (eventId, action, payload = {}) => {
+    const event = events.find(e => e.id === eventId)
+    if (!event) return
+
+    switch (action) {
+      case 'join':
+        await api.apply(eventId)
+        break
+      case 'leave':
+        await api.cancelApply(eventId)
+        break
+      case 'updateCapacity':
+        await api.updateCapacity(eventId, payload.newMax)
+        break
+      case 'selectCourts':
+        setEvents(prev => prev.map(e => e.id === eventId ? { ...e, activeCourts: payload.courts } : e))
+        return
+      case 'resetCourts':
+        await api.resetCourts(eventId)
+        break
+      case 'assignCourts': {
+        const confirmed = event.participants.filter(p => p.status === 'confirmed' && !p.id.startsWith('confirmed-'))
+        const activeCourts = event.activeCourts?.length ? event.activeCourts : [1, 2, 3]
+        const assignments = confirmed.map((participant, index) => ({
+          userId: Number(participant.id),
+          courtNumber: activeCourts[Math.floor(index / 4) % activeCourts.length],
+          matchType: 'DOUBLES',
+        }))
+        if (assignments.length > 0) await api.saveCourts(eventId, assignments)
+        break
+      }
+      default:
+        return
+    }
+
+    const [year, month] = event.date.split('-').map(Number)
+    await refreshSessions(year, month)
+  }, [events, refreshSessions])
+
+  const deleteEvent = useCallback(async (eventId) => {
+    const event = events.find(e => e.id === eventId)
+    await api.deleteSession(eventId)
     setEvents(prev => prev.filter(e => e.id !== eventId))
-  }, [])
+    if (event) {
+      const [year, month] = event.date.split('-').map(Number)
+      await refreshSessions(year, month)
+    }
+  }, [events, refreshSessions])
+
+  const value = useMemo(() => ({
+    auth,
+    loading,
+    error,
+    needsOnboarding,
+    completeOnboarding,
+    isAdmin,
+    setIsAdmin,
+    currentUser,
+    events,
+    refreshSessions,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    members,
+    toggleRole,
+    notices,
+    addNotice,
+    updateNotice,
+    deleteNotice,
+    signOut,
+    clubId: CLUB_ID,
+  }), [
+    addNotice, auth, completeOnboarding, createEvent, currentUser, deleteEvent,
+    deleteNotice, error, events, isAdmin, loading, members, needsOnboarding,
+    notices, refreshSessions, signOut, toggleRole, updateEvent, updateNotice,
+  ])
 
   return (
-    <AppContext.Provider value={{
-      isAdmin, setIsAdmin,
-      currentUser,
-      events, createEvent, updateEvent, deleteEvent,
-      signOut: onSignOut,
-    }}>
+    <AppContext.Provider value={value}>
       {children}
     </AppContext.Provider>
   )

@@ -1,0 +1,153 @@
+.cmap {
+  margin-bottom: 16px;
+}
+
+.cmap__gym {
+  display: flex;
+  height: 200px;
+  border: 2px solid #BDBDBD;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #EEEEEE;
+}
+
+/* Individual court */
+.cmap__court {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #F8F8F8;
+  min-width: 0;
+}
+
+.cmap__court + .cmap__court {
+  border-left: 1.5px solid #CACACA;
+}
+
+.cmap__court.active { background: #F0FAFA; }
+.cmap__court.mine   { background: #D6F5F3; }
+
+/* Court number */
+.cmap__num {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #C0C0C0;
+  padding: 4px 0 2px;
+  flex-shrink: 0;
+  line-height: 1;
+  letter-spacing: -0.3px;
+}
+
+.cmap__court.active .cmap__num { color: var(--primary); }
+.cmap__court.mine   .cmap__num { color: var(--primary-dark); font-weight: 900; }
+
+/* Player halves */
+.cmap__half {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 3px;
+  min-height: 0;
+}
+
+/* Net */
+.cmap__net {
+  width: 100%;
+  height: 5px;
+  flex-shrink: 0;
+  background: #9E9E9E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cmap__net span {
+  font-size: 4.5px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.5px;
+}
+
+/* Player chip */
+.cmap__chip {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: rgba(0, 189, 180, 0.14);
+  border-radius: 4px;
+  padding: 1px 4px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 6px);
+  line-height: 1.4;
+}
+
+.cmap__court.mine .cmap__chip {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Waiting row — 모든 코트 동일 높이로 NET 정렬 유지 */
+.cmap__waiting {
+  width: 100%;
+  flex-shrink: 0;
+  min-height: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(245, 166, 35, 0.1);
+  border-top: 1px dashed rgba(245, 166, 35, 0.5);
+}
+
+.cmap__waiting--empty {
+  background: transparent;
+  border-top-color: transparent;
+}
+
+.cmap__chip--wait {
+  background: rgba(245, 166, 35, 0.22);
+  color: #9A6000;
+  font-size: 8px;
+}
+
+/* Right wall */
+.cmap__wall {
+  width: 26px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  background: #E0E0E0;
+  border-left: 2px solid #BDBDBD;
+}
+
+.cmap__door {
+  width: 18px;
+  height: 30px;
+  background: var(--primary-dark);
+  border-radius: 3px 3px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cmap__door span {
+  font-size: 7px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  writing-mode: vertical-rl;
+  line-height: 1;
+}

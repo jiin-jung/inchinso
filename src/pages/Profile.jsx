@@ -12,12 +12,12 @@ export default function Profile() {
 
       <div className="profile__stats">
         <div className="profile__stat">
-          <span className="profile__stat-value">12</span>
+          <span className="profile__stat-value">{currentUser.totalParticipations}</span>
           <span className="profile__stat-label">참여 횟수</span>
         </div>
         <div className="profile__stat-divider" />
         <div className="profile__stat">
-          <span className="profile__stat-value">3</span>
+          <span className="profile__stat-value">{currentUser.monthlyParticipations}</span>
           <span className="profile__stat-label">이번 달</span>
         </div>
       </div>

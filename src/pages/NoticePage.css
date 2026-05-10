@@ -1,0 +1,114 @@
+.np__not-found {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 60px 24px;
+  font-size: 14px;
+}
+
+.np {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 56px);
+  padding-bottom: 40px;
+}
+
+/* 본문 */
+.np__body {
+  padding: 24px 20px 20px;
+  flex: 1;
+}
+
+.np__date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.np__text {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.75;
+  word-break: keep-all;
+  white-space: pre-wrap;
+}
+
+/* 운영진 액션 버튼 */
+.np__actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.np__action-btn {
+  flex: 1;
+  padding: 13px 0;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: opacity 0.15s;
+}
+
+.np__action-btn--edit {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 1.5px solid var(--primary);
+}
+
+.np__action-btn--delete {
+  background: none;
+  color: #E53935;
+  border: 1.5px solid #FFCDD2;
+}
+
+.np__action-btn--delete:hover { background: #FFEBEE; }
+
+/* 편집 모드 */
+.np__edit {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.np__edit-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  line-height: 1.7;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.np__edit-input:focus { border-color: var(--primary); }
+
+.np__edit-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.np__edit-btn {
+  flex: 1;
+  padding: 13px 0;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.np__edit-btn--cancel {
+  background: #F5F5F5;
+  color: var(--text-secondary);
+}
+
+.np__edit-btn--save {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.np__edit-btn--save:disabled { opacity: 0.4; cursor: not-allowed; }
