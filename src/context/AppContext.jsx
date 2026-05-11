@@ -105,6 +105,7 @@ function getCurrentYearMonth() {
 
 export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
   const [currentUser, setCurrentUser] = useState(null)
+  const [requiresName, setRequiresName] = useState(needsOnboarding)
   const [isAdmin, setIsAdmin] = useState(false)
   const [events, setEvents] = useState([])
   const [members, setMembers] = useState([])
@@ -172,6 +173,7 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
       const admin = user.role === 'admin'
       setCurrentUser(user)
       setIsAdmin(admin)
+      setRequiresName(!user.name?.trim())
 
       const { year, month } = getCurrentYearMonth()
       await Promise.all([
@@ -192,11 +194,15 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
 
   useEffect(() => {
     if (!needsOnboarding) loadInitialData()
-    else setLoading(false)
+    else {
+      setRequiresName(true)
+      setLoading(false)
+    }
   }, [loadInitialData, needsOnboarding])
 
   const completeOnboarding = useCallback(async (name) => {
     await api.onboarding(name)
+    setRequiresName(false)
     window.history.replaceState({}, '', '/')
     await loadInitialData()
   }, [loadInitialData])
@@ -290,7 +296,7 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
     auth,
     loading,
     error,
-    needsOnboarding,
+    needsOnboarding: requiresName,
     completeOnboarding,
     isAdmin,
     setIsAdmin,
@@ -310,7 +316,7 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
     clubId: CLUB_ID,
   }), [
     addNotice, auth, completeOnboarding, createEvent, currentUser, deleteEvent,
-    deleteNotice, error, events, isAdmin, loading, members, needsOnboarding,
+    deleteNotice, error, events, isAdmin, loading, members, requiresName,
     notices, refreshSessions, signOut, toggleRole, updateEvent, updateNotice,
   ])
 

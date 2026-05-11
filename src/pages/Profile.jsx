@@ -3,11 +3,12 @@ import './Profile.css'
 
 export default function Profile() {
   const { currentUser, isAdmin } = useApp()
+  const displayName = currentUser.name?.trim() || '이름 미등록'
 
   return (
     <div className="profile">
-      <div className="profile__avatar">{currentUser.name[0]}</div>
-      <h2 className="profile__name">{currentUser.name}</h2>
+      <div className="profile__avatar">{displayName[0]}</div>
+      <h2 className="profile__name">{displayName}</h2>
       <p className="profile__badge">{isAdmin ? '운영진' : '일반 회원'}</p>
 
       <div className="profile__stats">
