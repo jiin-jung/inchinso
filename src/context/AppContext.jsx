@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { api, clearAuth, readStoredAuth } from '../lib/api'
 
 const CLUB_ID = import.meta.env.VITE_CLUB_ID ?? '1'
@@ -111,6 +111,11 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
   const [notices, setNotices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const currentUserRef = useRef(null)
+
+  useEffect(() => {
+    currentUserRef.current = currentUser
+  }, [currentUser])
 
   const signOut = useCallback(async () => {
     const stored = readStoredAuth()
@@ -138,12 +143,14 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
   }, [])
 
   const refreshSessions = useCallback(async (year, month, userOverride = null) => {
-    const viewer = userOverride ?? currentUser
+    const viewer = userOverride ?? currentUserRef.current
     const sessions = await api.sessions(year, month)
     const mapped = await Promise.all((sessions ?? []).map(async (session) => {
       const [participation, participants, courts] = await Promise.all([
         api.myParticipation(session.id).catch(() => null),
-        api.participants(session.id).then(mapParticipants).catch(() => null),
+        viewer?.role === 'admin'
+          ? api.participants(session.id).then(mapParticipants).catch(() => null)
+          : Promise.resolve(null),
         api.courts(session.id).then(mapCourts).catch(() => null),
       ])
       return mapSession(session, participation, participants, courts, viewer)
@@ -154,7 +161,7 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
       const others = prev.filter(event => !event.date.startsWith(monthPrefix))
       return [...others, ...mapped]
     })
-  }, [currentUser])
+  }, [])
 
   const loadInitialData = useCallback(async () => {
     setLoading(true)
