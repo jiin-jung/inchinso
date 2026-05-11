@@ -112,6 +112,7 @@ export default function App() {
     if (token && refresh) {
       const next = { accessToken: token, refreshToken: refresh }
       storeAuth(next)
+      window.history.replaceState({}, '', window.location.pathname === '/onboarding' ? '/onboarding' : '/')
       return next
     }
     return readStoredAuth()
