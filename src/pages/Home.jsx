@@ -16,6 +16,25 @@ const todayStr = toDateStr(_today.getFullYear(), _today.getMonth(), _today.getDa
 function EventMiniCard({ event, onOpen, onClose }) {
   const { currentUser, updateEvent } = useApp()
   const { confirmed, myStatus, isFull, pct } = getEventStats(event, currentUser.id)
+  const [participationPending, setParticipationPending] = useState(false)
+  const [participationError, setParticipationError] = useState('')
+
+  const handleParticipation = async () => {
+    if (participationPending) return
+    setParticipationPending(true)
+    setParticipationError('')
+    try {
+      await updateEvent(
+        event.id,
+        myStatus ? 'leave' : 'join',
+        myStatus ? { userId: currentUser.id } : { user: currentUser },
+      )
+    } catch (err) {
+      setParticipationError(err.message || '참가 신청을 처리하지 못했습니다.')
+    } finally {
+      setParticipationPending(false)
+    }
+  }
 
   return (
     <div className="mini-overlay" onClick={onClose}>
@@ -45,17 +64,16 @@ function EventMiniCard({ event, onOpen, onClose }) {
         <div className="mini-card__actions">
           <button
             className={`mini-card__join-btn${myStatus ? ' leave' : ''}`}
-            onClick={() => myStatus
-              ? updateEvent(event.id, 'leave', { userId: currentUser.id })
-              : updateEvent(event.id, 'join', { user: currentUser })
-            }
+            onClick={handleParticipation}
+            disabled={participationPending}
           >
-            {myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
+            {participationPending ? '처리 중...' : myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
           </button>
           <button className="mini-card__open-btn" onClick={() => onOpen(event.id)}>
             상세 보기 →
           </button>
         </div>
+        {participationError && <p className="mini-card__error">{participationError}</p>}
       </div>
     </div>
   )

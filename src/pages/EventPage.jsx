@@ -13,6 +13,8 @@ export default function EventPage({ eventId }) {
   const [editMode, setEditMode] = useState(false)
   const [newName, setNewName] = useState('')
   const [copied, setCopied] = useState(false)
+  const [participationPending, setParticipationPending] = useState(false)
+  const [participationError, setParticipationError] = useState('')
 
   if (!event) return <p className="ep__not-found">모임을 찾을 수 없어요</p>
 
@@ -47,6 +49,23 @@ export default function EventPage({ eventId }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
+  }
+
+  const handleParticipation = async () => {
+    if (participationPending) return
+    setParticipationPending(true)
+    setParticipationError('')
+    try {
+      await updateEvent(
+        eventId,
+        myStatus ? 'leave' : 'join',
+        myStatus ? { userId: currentUser.id } : { user: currentUser },
+      )
+    } catch (err) {
+      setParticipationError(err.message || '참가 신청을 처리하지 못했습니다.')
+    } finally {
+      setParticipationPending(false)
+    }
   }
 
   return (
@@ -88,13 +107,12 @@ export default function EventPage({ eventId }) {
 
         <button
           className={`ep__join-btn${myStatus ? ' leave' : ''}`}
-          onClick={() => myStatus
-            ? updateEvent(eventId, 'leave', { userId: currentUser.id })
-            : updateEvent(eventId, 'join', { user: currentUser })
-          }
+          onClick={handleParticipation}
+          disabled={participationPending}
         >
-          {myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
+          {participationPending ? '처리 중...' : myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
         </button>
+        {participationError && <p className="ep__error-msg">{participationError}</p>}
       </section>
 
       {/* 참가 현황 */}
