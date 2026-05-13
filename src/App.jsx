@@ -29,7 +29,7 @@ function AppContent() {
     return <main><p style={{ padding: 24 }}>불러오는 중...</p></main>
   }
 
-  if (needsOnboarding && !currentUser) {
+  if (needsOnboarding) {
     return (
       <main className="login">
         <div className="login__hero">
