@@ -131,10 +131,10 @@ export default function EventPage({ eventId }) {
 
         <p className="ep__chips-label">확정 {confirmed.length}명</p>
         <div className="ep__chips">
-          {confirmed.map(p => (
-            <div key={p.id} className={`ep__chip${p.id === currentUser.id ? ' me' : ''}`}>
-              {p.name}
-              {editMode && (
+          {confirmed.map((p, i) => (
+            <div key={p.id || `p-${i}`} className={`ep__chip${p.id === currentUser.id || p.isMe ? ' me' : ''}`}>
+              {p.name || `참가자 ${p.order ?? i + 1}`}
+              {isAdmin && editMode && (
                 <button className="ep__chip-remove" onClick={() => updateEvent(eventId, 'remove', { participantId: p.id })}>×</button>
               )}
             </div>
@@ -146,9 +146,9 @@ export default function EventPage({ eventId }) {
             <p className="ep__chips-label waiting">대기 {waiting.length}명</p>
             <div className="ep__chips">
               {waiting.map((p, i) => (
-                <div key={p.id} className={`ep__chip waiting${p.id === currentUser.id ? ' me' : ''}`}>
-                  {i + 1}. {p.name}
-                  {editMode && (
+                <div key={p.id || `w-${i}`} className={`ep__chip waiting${p.id === currentUser.id || p.isMe ? ' me' : ''}`}>
+                  {i + 1}. {p.name || `참가자 ${p.order ?? i + 1}`}
+                  {isAdmin && editMode && (
                     <button className="ep__chip-remove" onClick={() => updateEvent(eventId, 'remove', { participantId: p.id })}>×</button>
                   )}
                 </div>
@@ -157,7 +157,7 @@ export default function EventPage({ eventId }) {
           </>
         )}
 
-        {editMode && (
+        {isAdmin && editMode && (
           <div className="ep__add-row">
             <input
               className="ep__add-input"

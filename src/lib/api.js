@@ -84,6 +84,7 @@ export async function reissueToken(refreshToken) {
 export const api = {
   me: () => apiRequest('/api/users/me'),
   users: () => apiRequest('/api/users'),
+  updateUser: (body) => apiRequest('/api/users/me', { method: 'PATCH', body }),
   grantAdmin: (id) => apiRequest(`/api/users/${id}/grant-admin`, { method: 'POST' }),
   revokeAdmin: (id) => apiRequest(`/api/users/${id}/revoke-admin`, { method: 'POST' }),
   onboarding: (name) => apiRequest('/api/auth/onboarding', { method: 'POST', body: { name } }),
@@ -99,6 +100,7 @@ export const api = {
   apply: (sessionId) => apiRequest(`/api/sessions/${sessionId}/participations`, { method: 'POST' }),
   cancelApply: (sessionId) => apiRequest(`/api/sessions/${sessionId}/participations`, { method: 'DELETE' }),
   myParticipation: (sessionId) => apiRequest(`/api/sessions/${sessionId}/participations/me`),
+  publicParticipations: (sessionId) => apiRequest(`/api/sessions/${sessionId}/participations/public`),
 
   notices: () => apiRequest(`/api/clubs/${CLUB_ID}/notices`),
   notice: (noticeId) => apiRequest(`/api/clubs/${CLUB_ID}/notices/${noticeId}`),

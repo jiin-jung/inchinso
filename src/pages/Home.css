@@ -225,6 +225,62 @@
 
 .home__notice-input:focus { border-color: var(--primary); }
 
+.home__notice-images {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+  border-top: 1px solid #F0F0F0;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.home__notice-image-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: #F9F9F9;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.home__notice-image-name {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.home__notice-image-remove {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 4px;
+}
+
+.home__notice-image-upload {
+  padding: 8px 0;
+}
+
+.home__notice-file-label {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #F5F5F5;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.home__notice-file-label:hover {
+  background: #EFEFEF;
+}
+
 .home__notice-form-btns {
   display: flex;
   gap: 8px;

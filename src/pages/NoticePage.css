@@ -30,6 +30,20 @@
   line-height: 1.75;
   word-break: keep-all;
   white-space: pre-wrap;
+  margin-bottom: 16px;
+}
+
+.np__images {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.np__image {
+  width: 100%;
+  border-radius: 12px;
+  max-height: 400px;
+  object-fit: cover;
 }
 
 /* 운영진 액션 버튼 */
@@ -86,6 +100,58 @@
 }
 
 .np__edit-input:focus { border-color: var(--primary); }
+
+.np__edit-images {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+  border-top: 1px solid #F0F0F0;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.np__edit-image-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: #F9F9F9;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.np__edit-image-name {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.np__edit-image-remove {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 4px;
+}
+
+.np__edit-file-label {
+  display: inline-block;
+  padding: 10px 14px;
+  background: #F5F5F5;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.np__edit-file-label:hover {
+  background: #EFEFEF;
+}
 
 .np__edit-btns {
   display: flex;

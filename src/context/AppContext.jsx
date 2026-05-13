@@ -22,9 +22,15 @@ function mapSession(session, participation = null, participants = null, courts =
 
   const participantList = participants?.length ? participants : placeholders
   const hasMe = currentUser && participantList.some(participant => participant.id === currentUser.id)
-  const nextParticipants = participation?.applied && currentUser && !hasMe
-    ? [...participantList, { id: currentUser.id, name: currentUser.name, status: 'confirmed' }]
-    : participantList
+  let nextParticipants = participantList
+  if (participation?.applied && currentUser && !hasMe) {
+    const me = { id: currentUser.id, name: currentUser.name || '나', status: 'confirmed' }
+    nextParticipants = participants?.length
+      ? [...participantList, me]
+      : participantList.length > 0
+        ? [me, ...participantList.slice(1)]
+        : [me]
+  }
 
   return {
     id: String(session.id),
@@ -68,11 +74,14 @@ function mapNotice(notice) {
   }
 }
 
-function makeNoticeForm(text) {
+function makeNoticeForm(text, images = []) {
   const formData = new FormData()
   formData.append('title', text.slice(0, 30) || '공지사항')
   formData.append('content', text)
   formData.append('pinned', 'false')
+  images.forEach((image, idx) => {
+    formData.append(`images`, image)
+  })
   return formData
 }
 
@@ -83,6 +92,20 @@ function mapParticipants(rawParticipants = []) {
       id: String(user.id ?? user.userId ?? participant.userId ?? `p-${index}`),
       name: user.name ?? participant.name ?? `참가자 ${index + 1}`,
       status: participant.status === 'WAITING' ? 'waiting' : 'confirmed',
+    }
+  })
+}
+
+function mapPublicParticipants(rawParticipants = [], currentUser = null, sessionId = '') {
+  return rawParticipants.map((participant, index) => {
+    const isMe = participant.isMe === true
+    const fallbackName = isMe ? currentUser?.name || '나' : `참가자 ${index + 1}`
+    return {
+      id: isMe ? currentUser?.id ?? `me-${sessionId}` : `anon-${sessionId}-${index}`,
+      name: participant.userName ?? participant.name ?? participant.displayName ?? fallbackName,
+      status: participant.status === 'WAITING' ? 'waiting' : 'confirmed',
+      order: participant.order ?? index + 1,
+      isMe,
     }
   })
 }
@@ -151,7 +174,7 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
         api.myParticipation(session.id).catch(() => null),
         viewer?.role === 'admin'
           ? api.participants(session.id).then(mapParticipants).catch(() => null)
-          : Promise.resolve(null),
+          : api.publicParticipations(session.id).then(data => mapPublicParticipants(data, viewer, session.id)).catch(() => null),
         api.courts(session.id).then(mapCourts).catch(() => null),
       ])
       return mapSession(session, participation, participants, courts, viewer)
@@ -215,8 +238,8 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
     await refreshMembers(true)
   }, [members, refreshMembers])
 
-  const addNotice = useCallback(async (text) => {
-    await api.createNotice(makeNoticeForm(text))
+  const addNotice = useCallback(async (text, images = []) => {
+    await api.createNotice(makeNoticeForm(text, images))
     await refreshNotices()
   }, [refreshNotices])
 
@@ -225,8 +248,8 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
     setNotices(prev => prev.filter(n => n.id !== noticeId))
   }, [])
 
-  const updateNotice = useCallback(async (noticeId, text) => {
-    await api.updateNotice(noticeId, makeNoticeForm(text))
+  const updateNotice = useCallback(async (noticeId, text, images = []) => {
+    await api.updateNotice(noticeId, makeNoticeForm(text, images))
     await refreshNotices()
   }, [refreshNotices])
 

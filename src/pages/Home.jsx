@@ -87,16 +87,33 @@ export default function Home({ onEventSelect, onNoticeSelect }) {
   const [previewId, setPreviewId] = useState(null)
   const [addingNotice, setAddingNotice] = useState(false)
   const [noticeText, setNoticeText] = useState('')
+  const [noticeImages, setNoticeImages] = useState([])
+  const [uploadingNotice, setUploadingNotice] = useState(false)
 
   useEffect(() => {
     refreshSessions(viewYear, viewMonth + 1)
   }, [refreshSessions, viewMonth, viewYear])
 
-  const handleAddNotice = () => {
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files || [])
+    setNoticeImages(prev => [...prev, ...files])
+  }
+
+  const removeNoticeImage = (index) => {
+    setNoticeImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const handleAddNotice = async () => {
     if (!noticeText.trim()) return
-    addNotice(noticeText.trim())
-    setNoticeText('')
-    setAddingNotice(false)
+    setUploadingNotice(true)
+    try {
+      await addNotice(noticeText.trim(), noticeImages)
+      setNoticeText('')
+      setNoticeImages([])
+      setAddingNotice(false)
+    } finally {
+      setUploadingNotice(false)
+    }
   }
 
   const eventMap = Object.fromEntries(events.map(e => [e.date, e]))
@@ -210,9 +227,56 @@ export default function Home({ onEventSelect, onNoticeSelect }) {
                 rows={3}
                 autoFocus
               />
+
+              {noticeImages.length > 0 && (
+                <div className="home__notice-images">
+                  {noticeImages.map((file, idx) => (
+                    <div key={idx} className="home__notice-image-item">
+                      <span className="home__notice-image-name">{file.name}</span>
+                      <button
+                        className="home__notice-image-remove"
+                        type="button"
+                        onClick={() => removeNoticeImage(idx)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="home__notice-image-upload">
+                <label className="home__notice-file-label">
+                  📷 이미지 선택
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
+
               <div className="home__notice-form-btns">
-                <button className="home__notice-btn home__notice-btn--cancel" onClick={() => { setAddingNotice(false); setNoticeText('') }}>취소</button>
-                <button className="home__notice-btn home__notice-btn--submit" onClick={handleAddNotice} disabled={!noticeText.trim()}>등록</button>
+                <button
+                  className="home__notice-btn home__notice-btn--cancel"
+                  onClick={() => {
+                    setAddingNotice(false)
+                    setNoticeText('')
+                    setNoticeImages([])
+                  }}
+                  disabled={uploadingNotice}
+                >
+                  취소
+                </button>
+                <button
+                  className="home__notice-btn home__notice-btn--submit"
+                  onClick={handleAddNotice}
+                  disabled={!noticeText.trim() || uploadingNotice}
+                >
+                  {uploadingNotice ? '등록 중...' : '등록'}
+                </button>
               </div>
             </div>
           )}
