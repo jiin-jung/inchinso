@@ -13,8 +13,7 @@ export default function EventDetail({ eventId, onClose }) {
   if (!event) return null
 
   const confirmed = event.participants.filter(p => p.status === 'confirmed')
-  const waiting = event.participants.filter(p => p.status === 'waiting')
-  const myStatus = event.participants.find(p => p.id === currentUser.id)?.status ?? null
+  const myStatus = confirmed.find(p => p.id === currentUser.id)?.status ?? null
   const isFull = confirmed.length >= event.maxCapacity
   const pct = Math.min((confirmed.length / event.maxCapacity) * 100, 100)
 
@@ -71,20 +70,20 @@ export default function EventDetail({ eventId, onClose }) {
           <div className="ed__bar">
             <div className="ed__bar-fill" style={{ width: `${pct}%` }} />
           </div>
-          {waiting.length > 0 && <p className="ed__waiting-msg">대기 {waiting.length}명</p>}
           {myStatus && (
             <span className={`ed__my-status ${myStatus}`}>
-              {myStatus === 'confirmed' ? '✓ 확정' : '⏳ 대기중'}
+              ✓ 확정
             </span>
           )}
           <button
             className={`ed__join-btn${myStatus ? ' leave' : ''}`}
+            disabled={!myStatus && isFull}
             onClick={() => myStatus
               ? updateEvent(eventId, 'leave', { userId: currentUser.id })
               : updateEvent(eventId, 'join', { user: currentUser })
             }
           >
-            {myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
+            {myStatus ? '신청 취소' : isFull ? '마감' : '참가 신청'}
           </button>
         </section>
 
@@ -113,22 +112,6 @@ export default function EventDetail({ eventId, onClose }) {
               </div>
             ))}
           </div>
-
-          {waiting.length > 0 && (
-            <>
-              <p className="ed__chips-label waiting">대기 {waiting.length}명</p>
-              <div className="ed__chips">
-                {waiting.map((p, i) => (
-                  <div key={p.id} className={`ed__chip waiting${p.id === currentUser.id ? ' me' : ''}`}>
-                    {i + 1}. {p.name}
-                    {editMode && (
-                      <button className="ed__chip-remove" onClick={() => updateEvent(eventId, 'remove', { participantId: p.id })}>×</button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
 
           {editMode && (
             <div className="ed__add-row">

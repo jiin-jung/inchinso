@@ -19,6 +19,7 @@ export default function EventForm({ date, onClose }) {
     location: '인천대 21호 체육관',
     rule: '10분 전 도착',
     maxCapacity: 16,
+    openAt: '',
   })
 
   const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }))
@@ -55,6 +56,16 @@ export default function EventForm({ date, onClose }) {
             />
           </div>
         ))}
+
+        <div className="ef__field">
+          <label className="ef__label">오픈</label>
+          <input
+            className="ef__input"
+            type="datetime-local"
+            value={form.openAt}
+            onChange={e => set('openAt', e.target.value)}
+          />
+        </div>
 
         <div className="ef__field">
           <label className="ef__label">정원</label>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { getEventStats } from '../utils/eventStats'
+import { formatOpenAt, isBeforeOpen as getIsBeforeOpen } from '../utils/openAt'
 import EventForm from '../components/EventForm'
 import './Home.css'
 
@@ -18,6 +19,8 @@ function EventMiniCard({ event, onOpen, onClose }) {
   const { confirmed, myStatus, isFull, pct } = getEventStats(event, currentUser.id)
   const [participationPending, setParticipationPending] = useState(false)
   const [participationError, setParticipationError] = useState('')
+  const isBeforeOpen = !myStatus && getIsBeforeOpen(event.openAt)
+  const openAtLabel = formatOpenAt(event.openAt)
 
   const handleParticipation = async () => {
     if (participationPending) return
@@ -30,7 +33,11 @@ function EventMiniCard({ event, onOpen, onClose }) {
         myStatus ? { userId: currentUser.id } : { user: currentUser },
       )
     } catch (err) {
-      setParticipationError(err.message || '참가 신청을 처리하지 못했습니다.')
+      setParticipationError(
+        err.code === 'PARTICIPATION_NOT_OPEN'
+          ? '아직 신청 시간이 아닙니다.'
+          : err.message || '참가 신청을 처리하지 못했습니다.',
+      )
     } finally {
       setParticipationPending(false)
     }
@@ -56,7 +63,7 @@ function EventMiniCard({ event, onOpen, onClose }) {
           <span className="mini-card__count-max">/{event.maxCapacity}명</span>
           {myStatus && (
             <span className={`mini-card__status ${myStatus}`}>
-              {myStatus === 'confirmed' ? '✓ 확정' : '⏳ 대기'}
+              ✓ 확정
             </span>
           )}
         </div>
@@ -65,9 +72,15 @@ function EventMiniCard({ event, onOpen, onClose }) {
           <button
             className={`mini-card__join-btn${myStatus ? ' leave' : ''}`}
             onClick={handleParticipation}
-            disabled={participationPending}
+            disabled={participationPending || isBeforeOpen || (!myStatus && isFull)}
           >
-            {participationPending ? '처리 중...' : myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
+            {participationPending
+              ? '처리 중...'
+              : myStatus
+                ? '신청 취소'
+                : isBeforeOpen
+                  ? openAtLabel
+                  : isFull ? '마감' : '참가 신청'}
           </button>
           <button className="mini-card__open-btn" onClick={() => onOpen(event.id)}>
             상세 보기 →

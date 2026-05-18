@@ -101,10 +101,6 @@
   color: var(--primary-dark);
 }
 
-.profile__val.status-waiting {
-  color: var(--orange);
-}
-
 .profile__edit-trigger {
   margin-top: 8px;
   padding: 8px 20px;

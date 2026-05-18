@@ -51,12 +51,6 @@
   transition: width 0.4s ease;
 }
 
-.vote-card__waiting {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-}
-
 .vote-card__status {
   font-size: 12px;
   font-weight: 700;
@@ -68,11 +62,6 @@
 .vote-card__status.confirmed {
   background: rgba(255, 255, 255, 0.25);
   color: var(--white);
-}
-
-.vote-card__status.waiting {
-  background: rgba(245, 166, 35, 0.3);
-  color: #FFE082;
 }
 
 .vote-card__btn {

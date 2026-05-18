@@ -535,11 +535,6 @@
   color: var(--primary-dark);
 }
 
-.mini-card__status.waiting {
-  background: #FFF3E0;
-  color: #E65100;
-}
-
 .mini-card__actions {
   display: flex;
   gap: 10px;

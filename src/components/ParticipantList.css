@@ -32,11 +32,6 @@
   color: var(--primary-dark);
 }
 
-.plist__count.waiting {
-  background: #FFF3E0;
-  color: #E65100;
-}
-
 .plist__chips {
   display: flex;
   flex-wrap: wrap;
@@ -52,18 +47,8 @@
   border-radius: 20px;
 }
 
-.plist__chip.waiting {
-  background: #FFF3E0;
-  color: #E65100;
-}
-
 .plist__chip.me {
   background: var(--primary);
   color: var(--white);
   font-weight: 700;
-}
-
-.plist__chip.waiting.me {
-  background: var(--orange);
-  color: var(--white);
 }

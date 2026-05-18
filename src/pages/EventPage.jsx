@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import CourtMap from '../components/CourtMap'
 import { getEventStats } from '../utils/eventStats'
+import { formatOpenAt, isBeforeOpen as getIsBeforeOpen } from '../utils/openAt'
 import './EventPage.css'
 
 const EMPTY_COURTS = {}
@@ -18,8 +19,10 @@ export default function EventPage({ eventId }) {
 
   if (!event) return <p className="ep__not-found">모임을 찾을 수 없어요</p>
 
-  const { confirmed, waiting, myStatus, isFull, pct } = getEventStats(event, currentUser.id)
+  const { confirmed, myStatus, isFull, pct } = getEventStats(event, currentUser.id)
   const activeCourts = event.activeCourts ?? []
+  const isBeforeOpen = !myStatus && getIsBeforeOpen(event.openAt)
+  const openAtLabel = formatOpenAt(event.openAt)
 
   const myCourt = event.courts
     ? Object.entries(event.courts).find(([, c]) =>
@@ -62,7 +65,11 @@ export default function EventPage({ eventId }) {
         myStatus ? { userId: currentUser.id } : { user: currentUser },
       )
     } catch (err) {
-      setParticipationError(err.message || '참가 신청을 처리하지 못했습니다.')
+      setParticipationError(
+        err.code === 'PARTICIPATION_NOT_OPEN'
+          ? '아직 신청 시간이 아닙니다.'
+          : err.message || '참가 신청을 처리하지 못했습니다.',
+      )
     } finally {
       setParticipationPending(false)
     }
@@ -97,20 +104,26 @@ export default function EventPage({ eventId }) {
           <div className="ep__bar-fill" style={{ width: `${pct}%` }} />
         </div>
 
-        {waiting.length > 0 && <p className="ep__waiting-msg">대기 {waiting.length}명</p>}
+        {isBeforeOpen && openAtLabel && <p className="ep__open-msg">{openAtLabel}</p>}
 
         {myStatus && (
           <span className={`ep__my-status ${myStatus}`}>
-            {myStatus === 'confirmed' ? '✓ 확정' : '⏳ 대기중'}
+            ✓ 확정
           </span>
         )}
 
         <button
           className={`ep__join-btn${myStatus ? ' leave' : ''}`}
           onClick={handleParticipation}
-          disabled={participationPending}
+          disabled={participationPending || isBeforeOpen || (!myStatus && isFull)}
         >
-          {participationPending ? '처리 중...' : myStatus ? '신청 취소' : isFull ? '대기 신청' : '참가 신청'}
+          {participationPending
+            ? '처리 중...'
+            : myStatus
+              ? '신청 취소'
+              : isBeforeOpen
+                ? openAtLabel
+                : isFull ? '마감' : '참가 신청'}
         </button>
         {participationError && <p className="ep__error-msg">{participationError}</p>}
       </section>
@@ -140,22 +153,6 @@ export default function EventPage({ eventId }) {
             </div>
           ))}
         </div>
-
-        {waiting.length > 0 && (
-          <>
-            <p className="ep__chips-label waiting">대기 {waiting.length}명</p>
-            <div className="ep__chips">
-              {waiting.map((p, i) => (
-                <div key={p.id || `w-${i}`} className={`ep__chip waiting${p.id === currentUser.id || p.isMe ? ' me' : ''}`}>
-                  {i + 1}. {p.name || `참가자 ${p.order ?? i + 1}`}
-                  {isAdmin && editMode && (
-                    <button className="ep__chip-remove" onClick={() => updateEvent(eventId, 'remove', { participantId: p.id })}>×</button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
 
         {isAdmin && editMode && (
           <div className="ep__add-row">

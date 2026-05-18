@@ -128,11 +128,11 @@
   transition: width 0.3s ease;
 }
 
-.ep__waiting-msg {
+.ep__open-msg {
   font-size: 13px;
-  color: var(--orange);
-  font-weight: 500;
-  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .ep__my-status {
@@ -147,11 +147,6 @@
 .ep__my-status.confirmed {
   background: var(--primary-light);
   color: var(--primary-dark);
-}
-
-.ep__my-status.waiting {
-  background: #FFF3E0;
-  color: #E65100;
 }
 
 .ep__join-btn {
@@ -193,11 +188,6 @@
   margin-bottom: 8px;
 }
 
-.ep__chips-label.waiting {
-  color: #E65100;
-  margin-top: 14px;
-}
-
 .ep__chips {
   display: flex;
   flex-wrap: wrap;
@@ -220,16 +210,6 @@
   background: var(--primary);
   color: var(--white);
   font-weight: 700;
-}
-
-.ep__chip.waiting {
-  background: #FFF3E0;
-  color: #E65100;
-}
-
-.ep__chip.waiting.me {
-  background: var(--orange);
-  color: var(--white);
 }
 
 .ep__chip-remove {

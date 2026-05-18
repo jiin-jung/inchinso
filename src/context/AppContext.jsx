@@ -11,6 +11,11 @@ function displayDate(dateStr) {
   return `${Number(month)}월 ${Number(day)}일`
 }
 
+function isConfirmedParticipationStatus(status) {
+  const normalized = String(status ?? '').trim().toUpperCase()
+  return !normalized || normalized === 'CONFIRMED'
+}
+
 function mapSession(session, participation = null, participants = null, courts = null, currentUser = null) {
   const date = session.sessionDate
   const confirmedCount = session.confirmedCount ?? participants?.length ?? 0
@@ -23,8 +28,17 @@ function mapSession(session, participation = null, participants = null, courts =
   const participantList = participants?.length ? participants : placeholders
   const hasMe = currentUser && participantList.some(participant => participant.id === currentUser.id)
   let nextParticipants = participantList
-  if (participation?.applied && currentUser && !hasMe) {
-    const me = { id: currentUser.id, name: currentUser.name || '나', status: 'confirmed' }
+  if (
+    participation?.applied &&
+    currentUser &&
+    !hasMe &&
+    isConfirmedParticipationStatus(participation.status)
+  ) {
+    const me = {
+      id: currentUser.id,
+      name: currentUser.name || '나',
+      status: 'confirmed',
+    }
     nextParticipants = participants?.length
       ? [...participantList, me]
       : participantList.length > 0
@@ -43,6 +57,7 @@ function mapSession(session, participation = null, participants = null, courts =
     rule: session.rules,
     maxCapacity: session.maxParticipants,
     status: session.status,
+    openAt: session.openAt ?? null,
     participants: nextParticipants,
     activeCourts: courts ? Object.keys(courts).map(Number) : [],
     courts,
@@ -86,24 +101,24 @@ function makeNoticeForm(text, images = []) {
 }
 
 function mapParticipants(rawParticipants = []) {
-  return rawParticipants.map((participant, index) => {
+  return rawParticipants.filter(participant => isConfirmedParticipationStatus(participant.status)).map((participant, index) => {
     const user = participant.user ?? participant
     return {
       id: String(user.id ?? user.userId ?? participant.userId ?? `p-${index}`),
       name: user.name ?? participant.name ?? `참가자 ${index + 1}`,
-      status: participant.status === 'WAITING' ? 'waiting' : 'confirmed',
+      status: 'confirmed',
     }
   })
 }
 
 function mapPublicParticipants(rawParticipants = [], currentUser = null, sessionId = '') {
-  return rawParticipants.map((participant, index) => {
+  return rawParticipants.filter(participant => isConfirmedParticipationStatus(participant.status)).map((participant, index) => {
     const isMe = participant.isMe === true
     const fallbackName = isMe ? currentUser?.name || '나' : `참가자 ${index + 1}`
     return {
       id: isMe ? currentUser?.id ?? `me-${sessionId}` : `anon-${sessionId}-${index}`,
       name: participant.userName ?? participant.name ?? participant.displayName ?? fallbackName,
-      status: participant.status === 'WAITING' ? 'waiting' : 'confirmed',
+      status: 'confirmed',
       order: participant.order ?? index + 1,
       isMe,
     }
@@ -261,6 +276,7 @@ export function AppProvider({ children, auth, needsOnboarding, onAuthChange }) {
       location: data.location,
       rules: data.rule,
       maxParticipants: data.maxCapacity,
+      ...(data.openAt ? { openAt: data.openAt } : {}),
     })
     const [year, month] = data.date.split('-').map(Number)
     await refreshSessions(year, month)

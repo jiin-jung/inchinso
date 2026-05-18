@@ -65,7 +65,10 @@ export async function apiRequest(path, options = {}, retry = true) {
 
   if (!response.ok) {
     const message = data?.message ?? '요청을 처리하지 못했습니다.'
-    throw new Error(message)
+    const error = new Error(message)
+    error.code = data?.code
+    error.status = response.status
+    throw error
   }
 
   return data
